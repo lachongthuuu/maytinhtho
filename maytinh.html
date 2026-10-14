@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casio fx-580VN X Cute Ombre Edition</title>
+    <style>
+        :root {
+            --bg-color: #160d21;
+            --calc-body: #1f1330;
+            --screen-bg: #e2e8d7;
+            --screen-text: #1a1528;
+            --btn-dark: #291c3d;
+            --btn-text: #f3f0fb;
+            --accent-white: #ffffff;
+            --accent-red: #ff6b81;
+            --accent-green: #2ed573;
+            --accent-yellow: #ffa502;
+            --accent-pink: #ff9ff3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            /* Nền Ombre tím đen cute dịu dàng */
+            background: linear-gradient(135deg, #1b1028, #2a153d, #0f0817);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #fx-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .calculator-container {
+            /* Vỏ máy hiệu ứng Ombre tím đen sang trọng & cute */
+            background: linear-gradient(145deg, #28183f, #180d24);
+            border: 3px solid #533b78;
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: 0 20px 50px rgba(15, 8, 25, 0.9), inset 0 2px 8px rgba(255, 182, 193, 0.2);
+            width: 440px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Thanh trạng thái phía trên màn hình */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            color: #d1bce3;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .top-nav div span {
+            margin-right: 6px;
+            background: #362252;
+            padding: 1px 5px;
+            border-radius: 4px;
+            border: 1px solid #63478d;
+        }
+
+        .top-nav .icons span {
+            margin-left: 4px;
+            margin-right: 0;
+            cursor: pointer;
+        }
+
+        /* Màn hình hiển thị chuẩn Casio */
+        .screen {
+            background-color: var(--screen-bg);
+            border: 3px inset #97a685;
+            border-radius: 8px;
+            height: 90px;
+            padding: 6px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.25);
+            position: relative;
+        }
+
+        .screen-input-box {
+            font-size: 13px;
+            color: #4a3b5c;
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+        }
+
+        .screen-main-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .screen-main {
+            font-size: 24px;
+            color: var(--screen-text);
+            text-align: right;
+            font-weight: 600;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .screen-main::-webkit-scrollbar {
+            height: 2px;
+        }
+
+        /* Điểm phát hiệu ứng pháo bông tại khu vực màn hình đáp án */
+        .result-popup-effect {
+            position: absolute;
+            right: 22px;
+            bottom: 12px;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .result-popup-effect .yaaaa-text {
+            position: absolute;
+            left: 0;
+            top: -18px;
+            white-space: nowrap;
+            font-size: 10px;
+            font-weight: 600;
+            color: #ff4757;
+            text-shadow: 0 0 4px #ff9ff3;
+            animation: text-rise 0.8s ease-out forwards;
+        }
+
+        .result-popup-effect .burst-icon {
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 17px;
+            line-height: 1;
+            animation: firework-burst 0.9s cubic-bezier(0.15, 0.75, 0.25, 1) var(--burst-delay) forwards;
+        }
+
+        @keyframes firework-burst {
+            0% {
+                transform: translate(-50%, -50%) scale(0.25);
+                opacity: 0;
+            }
+            12% { opacity: 1; }
+            75% {
+                transform: translate(calc(-50% + var(--burst-x)), calc(-50% + var(--burst-y))) scale(1) rotate(var(--burst-rotate));
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(-50% + var(--burst-x)), calc(-50% + var(--burst-y))) scale(0.85) rotate(var(--burst-rotate));
+                opacity: 0;
+            }
+        }
+
+        @keyframes text-rise {
+            0% { transform: translateY(4px); opacity: 0; }
+            15%, 70% { opacity: 1; }
+            100% { transform: translateY(-5px); opacity: 0; }
+        }
+
+        /* Bàn phím mô phỏng chuẩn Casio fx-580VN X */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+
+        button.key {
+            background-color: var(--btn-dark);
+            color: var(--btn-text);
+            border: 1px solid #453163;
+            border-radius: 6px;
+            padding: 6px 2px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+        }
+
+        button.key:active {
+            transform: translateY(2px);
+            box-shadow: 0 0 14px rgba(255, 159, 243, 0.8), 0 0 24px rgba(255, 107, 129, 0.45);
+        }
+
+        button.key::after,
+        .nav-btn::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -70%;
+            width: 45%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+            opacity: 0;
+            pointer-events: none;
+            transform: rotate(25deg);
+        }
+
+        button.key.is-bling,
+        .nav-btn.is-bling {
+            animation: button-glow 0.55s ease-out;
+        }
+
+        button.key.is-bling::after,
+        .nav-btn.is-bling::after {
+            animation: button-shimmer 0.55s ease-out;
+        }
+
+        @keyframes button-glow {
+            0%, 100% { filter: brightness(1); }
+            35% {
+                filter: brightness(1.55);
+                box-shadow: 0 0 14px rgba(255, 159, 243, 0.8), 0 0 24px rgba(255, 107, 129, 0.45);
+            }
+        }
+
+        @keyframes button-shimmer {
+            0% { left: -70%; opacity: 0; }
+            20% { opacity: 1; }
+            100% { left: 130%; opacity: 0; }
+        }
+
+        .key-sub {
+            font-size: 8px;
+            display: block;
+            color: #caaee0;
+            margin-bottom: 1px;
+            line-height: 1;
+        }
+
+        /* Cụm phím điều hướng 4 chiều chuẩn */
+        .nav-container {
+            grid-column: span 3;
+            background: #1f1430;
+            border: 1px solid #4a346e;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            height: 75px;
+            padding: 2px;
+            gap: 2px;
+        }
+
+        .nav-btn {
+            background-color: #2b1c42;
+            border: 1px solid #5a4185;
+            border-radius: 4px;
+            color: #f1e6ff;
+            font-size: 10px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.1s;
+        }
+        .nav-btn:active { background-color: #4a346e; }
+
+        .btn-up { grid-column: 2; grid-row: 1; }
+        .btn-left { grid-column: 1; grid-row: 2; }
+        .btn-ok { grid-column: 2; grid-row: 2; background-color: #190f26; font-size: 8px; }
+        .btn-right { grid-column: 3; grid-row: 2; }
+        .btn-down { grid-column: 2; grid-row: 3; }
+
+        /* Màu sắc phím chức năng cute */
+        button.key.shift { color: #ffeaa7; }
+        button.key.alpha { color: #ff7675; }
+        button.key.del { background-color: #c0392b; color: white; }
+        button.key.ac { background-color: #a93226; color: white; }
+        button.key.equals { background-color: #2ecc71; color: white; font-size: 15px; }
+        button.key.op { color: #f3e8ff; }
+
+    </style>
+</head>
+<body>
+
+    <div class="calculator-container">
+        <div class="top-nav">
+            <div>
+                <span>RAD</span><span>FRAC</span><span>NORM</span>
+            </div>
+            <div class="icons">
+                <span>🔍</span><span>🔍+</span><span>↩</span><span>↪</span>
+            </div>
+        </div>
+
+        <div class="screen">
+            <input type="text" class="screen-input-box" id="screen-top" placeholder="Nhập biểu thức: x² - 3x + 1 = 0...">
+            <div class="screen-main-wrapper">
+                <div class="screen-main" id="screen-main">0</div>
+                <div id="effect-container"></div>
+            </div>
+        </div>
+
+        <div class="keypad" id="keypad">
+            <!-- Hàng 1 -->
+            <button class="key shift" data-val="SHIFT"><span class="key-sub">&nbsp;</span>SHIFT</button>
+            <button class="key alpha" data-val="ALPHA"><span class="key-sub">&nbsp;</span>ALPHA</button>
+            <button class="key op" data-val="MODE"><span class="key-sub">SETUP</span>MENU</button>
+            <button class="key op" data-val="SETUP"><span class="key-sub">&nbsp;</span>🎛️</button>
+            <button class="key del" data-val="BACKSPACE"><span class="key-sub">INS</span>DEL</button>
+
+            <!-- Hàng 2 -->
+            <button class="key op" data-val="OPTN"><span class="key-sub">SOLVE</span>OPTN</button>
+            <button class="key op" data-val="CALC"><span class="key-sub">=</span>CALC</button>
+            <button class="key ac" data-val="Escape"><span class="key-sub">CLR</span>AC</button>
+            <button class="key op" data-val="int"><span class="key-sub">d/dx</span>∫</button>
+            <button class="key op" data-val="sum"><span class="key-sub">Σ</span> : </button>
+
+            <!-- Cụm điều hướng 4 hướng -->
+            <div class="nav-container">
+                <button class="nav-btn btn-up" data-val="UP">▲</button>
+                <button class="nav-btn btn-left" data-val="LEFT">◀</button>
+                <button class="nav-btn btn-ok" data-val="OK">OK</button>
+                <button class="nav-btn btn-right" data-val="RIGHT">▶</button>
+                <button class="nav-btn btn-down" data-val="DOWN">▼</button>
+            </div>
+            <button class="key op" data-val="prod" style="grid-column: span 2;"><span class="key-sub">Π</span> ∑ </button>
+
+            <!-- Hàng phím chức năng toán học tiếp theo -->
+            <button class="key op" data-val="frac"><span class="key-sub">&nbsp;</span>📱</button>
+            <button class="key op" data-val="eng-cvt"><span class="key-sub">° ' "</span>◄►R</button>
+            <button class="key op" data-val="sqrt"><span class="key-sub">∛</span>√</button>
+            <button class="key op" data-val="x^2"><span class="key-sub">x³</span>x²</button>
+            <button class="key op" data-val="x^n"><span class="key-sub">mod</span>x^</button>
+
+            <button class="key op" data-val="log-base"><span class="key-sub">10ˣ</span>log□</button>
+            <button class="key op" data-val="ln"><span class="key-sub">eˣ</span>ln</button>
+            <button class="key op" data-val="neg"><span class="key-sub">A</span>(-)</button>
+            <button class="key op" data-val="deg"><span class="key-sub">B</span>°'""</button>
+            <button class="key op" data-val="inv"><span class="key-sub">C</span>x⁻¹</button>
+
+            <button class="key op" data-val="sin"><span class="key-sub">D</span>sin</button>
+            <button class="key op" data-val="cos"><span class="key-sub">E</span>cos</button>
+            <button class="key op" data-val="tan"><span class="key-sub">F</span>tan</button>
+            <button class="key op" data-val="sto"><span class="key-sub">RECALL</span>STO</button>
+            <button class="key op" data-val="eng"><span class="key-sub">∠</span>ENG</button>
+
+            <button class="key op" data-val="("><span class="key-sub">Abs</span>(</button>
+            <button class="key op" data-val=")"><span class="key-sub">x</span>)</button>
+            <button class="key op" data-val="sd"><span class="key-sub">a ⬌ d</span>S⬌D</button>
+            <button class="key op" data-val="m+"><span class="key-sub">M-</span>M+</button>
+            <button class="key op" data-val="ans-key"><span class="key-sub">PreAns</span>Ans</button>
+
+            <!-- Hàng số -->
+            <button class="key" data-val="7"><span class="key-sub">CONST</span>7</button>
+            <button class="key" data-val="8"><span class="key-sub">CONV</span>8</button>
+            <button class="key" data-val="9"><span class="key-sub">Limit</span>9</button>
+            <button class="key op" data-val="/"><span class="key-sub">nPr</span>÷</button>
+            <button class="key op" data-val="*"><span class="key-sub">nCr</span>×</button>
+
+            <button class="key" data-val="4"><span class="key-sub">MATRIX</span>4</button>
+            <button class="key" data-val="5"><span class="key-sub">VECTOR</span>5</button>
+            <button class="key" data-val="6"><span class="key-sub">&nbsp;</span>6</button>
+            <button class="key op" data-val="-"><span class="key-sub">Pol</span>-</button>
+            <button class="key op" data-val="+"><span class="key-sub">Rec</span>+</button>
+
+            <button class="key" data-val="1"><span class="key-sub">&nbsp;</span>1</button>
+            <button class="key" data-val="2"><span class="key-sub">CMPLX</span>2</button>
+            <button class="key" data-val="3"><span class="key-sub">&nbsp;</span>3</button>
+            <button class="key op" data-val="pi"><span class="key-sub">e</span>π</button>
+            <button class="key op" data-val="exp10"><span class="key-sub">%</span>×10ˣ</button>
+
+            <button class="key" data-val="0"><span class="key-sub">&nbsp;</span>0</button>
+            <button class="key" data-val="."><span class="key-sub">Rnd</span>.</button>
+            <button class="key op" data-val="fact"><span class="key-sub">x!</span>FACT</button>
+            <button class="key equals" data-val="Enter" style="grid-column: span 2;">=</button>
+        </div>
+    </div>
+
+    <script>
+        const screenMain = document.getElementById('screen-main');
+        const screenTop = document.getElementById('screen-top');
+        const effectContainer = document.getElementById('effect-container');
+        let currentInput = "0";
+        let lastAns = "0";
+
+        const blingTimers = new WeakMap();
+
+        function triggerButtonBling(button) {
+            const existingTimer = blingTimers.get(button);
+            if (existingTimer) clearTimeout(existingTimer);
+            button.classList.remove('is-bling');
+            void button.offsetWidth;
+            button.classList.add('is-bling');
+
+            const timer = setTimeout(() => {
+                button.classList.remove('is-bling');
+                blingTimers.delete(button);
+            }, 550);
+            blingTimers.set(button, timer);
+        }
+
+        function handleInput(val) {
+            if (currentInput === "0" && !["+", "-", "*", "/", ".", ")"].includes(val)) {
+                currentInput = val;
+            } else {
+                currentInput += val;
+            }
+            updateScreen();
+        }
+
+        function clearAll() {
+            currentInput = "0";
+            screenTop.value = "";
+            updateScreen();
+        }
+
+        function deleteChar() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = "0";
+            }
+            updateScreen();
+        }
+
+        function calculate() {
+            try {
+                let computeStr = currentInput
+                    .replace(/×/g, '*')
+                    .replace(/÷/g, '/')
+                    .replace(/π/g, 'Math.PI')
+                    .replace(/sin\(/g, 'Math.sin(')
+                    .replace(/cos\(/g, 'Math.cos(')
+                    .replace(/tan\(/g, 'Math.tan(')
+                    .replace(/log\(/g, 'Math.log10(')
+                    .replace(/ln\(/g, 'Math.log(')
+                    .replace(/Ans/g, lastAns);
+
+                let result = eval(computeStr);
+                lastAns = result.toString();
+                screenTop.value = currentInput + " =";
+                currentInput = lastAns;
+                updateScreen();
+
+                // Hiệu ứng chữ "Yaaaa" kèm Thỏ & Cà rốt ngay ô kết quả
+                triggerRabbitCarrotEffect();
+            } catch (err) {
+                screenMain.innerText = "Math ERROR";
+                currentInput = "0";
+            }
+        }
+
+        function updateScreen() {
+            screenMain.innerText = currentInput;
+            screenMain.scrollLeft = screenMain.scrollWidth;
+        }
+
+        // Hiệu ứng thỏ & cà rốt cute kèm chữ "Yaaaa" ngay tại màn hình kết quả
+        function triggerRabbitCarrotEffect() {
+            const popup = document.createElement('div');
+            popup.className = 'result-popup-effect';
+            const label = document.createElement('span');
+            label.className = 'yaaaa-text';
+            label.textContent = 'Yaaa!';
+            popup.appendChild(label);
+
+            const particles = [
+                { icon: '🐰', x: -42, y: -24, rotate: -24 },
+                { icon: '🥕', x: -25, y: -30, rotate: -35 },
+                { icon: '🐰', x: 2, y: -32, rotate: 18 },
+                { icon: '🥕', x: 30, y: -27, rotate: 35 },
+                { icon: '🐰', x: 46, y: -14, rotate: 28 },
+                { icon: '🥕', x: 42, y: 12, rotate: 65 },
+                { icon: '🐰', x: 18, y: 24, rotate: -18 },
+                { icon: '🥕', x: -27, y: 18, rotate: -55 }
+            ];
+
+            particles.forEach((particle, index) => {
+                const icon = document.createElement('span');
+                icon.className = 'burst-icon';
+                icon.textContent = particle.icon;
+                icon.style.setProperty('--burst-x', `${particle.x}px`);
+                icon.style.setProperty('--burst-y', `${particle.y}px`);
+                icon.style.setProperty('--burst-rotate', `${particle.rotate}deg`);
+                icon.style.setProperty('--burst-delay', `${index * 25}ms`);
+                icon.setAttribute('aria-hidden', 'true');
+                popup.appendChild(icon);
+            });
+
+            effectContainer.replaceChildren(popup);
+            setTimeout(() => {
+                popup.remove();
+            }, 1100);
+        }
+
+        // Bắt sự kiện bấm phím trên giao diện
+        document.querySelectorAll('.key, .nav-btn').forEach(element => {
+            element.addEventListener('click', (e) => {
+                triggerButtonBling(element);
+                const val = element.getAttribute('data-val');
+                
+                if (val === 'Escape') clearAll();
+                else if (val === 'BACKSPACE') deleteChar();
+                else if (val === 'Enter') calculate();
+                else if (['sin', 'cos', 'tan', 'log-base'].includes(val)) handleInput(val.replace('-base','') + '(');
+                else if (val === 'x^2') handleInput('^2');
+                else if (val === 'sqrt') handleInput('sqrt(');
+                else if (val === 'pi') handleInput('π');
+                else if (val === 'exp10') handleInput('×10^');
+                else if (val === 'ans-key') handleInput('Ans');
+                else if (['UP', 'DOWN', 'LEFT', 'RIGHT', 'OK', 'SHIFT', 'ALPHA', 'MODE', 'SETUP', 'OPTN', 'CALC', 'sto'].includes(val)) {
+                    // Tương tác điều hướng
+                } else {
+                    handleInput(val);
+                }
+            });
+        });
+
+        // Hỗ trợ bấm bàn phím cứng Windows
+        window.addEventListener('keydown', (e) => {
+            const keyMap = {
+                '0': '0', '1': '1', '2': '2', '3': '3', '4': '4',
+                '5': '5', '6': '6', '7': '7', '8': '8', '9': '9',
+                '+': '+', '-': '-', '*': '*', '/': '/', '.': '.',
+                '(': '(', ')': ')', 'Enter': 'Enter', 'Backspace': 'BACKSPACE', 'Escape': 'Escape'
+            };
+
+            const mappedVal = keyMap[e.key];
+            if (mappedVal) {
+                const btn = document.querySelector(`[data-val="${mappedVal}"]`);
+                if (btn) {
+                    triggerButtonBling(btn);
+                }
+
+                if (mappedVal === 'Escape') clearAll();
+                else if (mappedVal === 'BACKSPACE') deleteChar();
+                else if (mappedVal === 'Enter') calculate();
+                else handleInput(mappedVal);
+            }
+        });
+    </script>
+</body>
+</html>
