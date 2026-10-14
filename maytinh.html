@@ -129,7 +129,6 @@
             height: 2px;
         }
 
-        /* Điểm phát hiệu ứng pháo bông tại khu vực màn hình đáp án */
         .result-popup-effect {
             position: absolute;
             right: 22px;
@@ -197,10 +196,9 @@
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.1s ease;
+            transition: transform 0.1s ease;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -210,45 +208,6 @@
 
         button.key:active {
             transform: translateY(2px);
-            box-shadow: 0 0 14px rgba(255, 159, 243, 0.8), 0 0 24px rgba(255, 107, 129, 0.45);
-        }
-
-        button.key::after,
-        .nav-btn::after {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -70%;
-            width: 45%;
-            height: 200%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
-            opacity: 0;
-            pointer-events: none;
-            transform: rotate(25deg);
-        }
-
-        button.key.is-bling,
-        .nav-btn.is-bling {
-            animation: button-glow 0.55s ease-out;
-        }
-
-        button.key.is-bling::after,
-        .nav-btn.is-bling::after {
-            animation: button-shimmer 0.55s ease-out;
-        }
-
-        @keyframes button-glow {
-            0%, 100% { filter: brightness(1); }
-            35% {
-                filter: brightness(1.55);
-                box-shadow: 0 0 14px rgba(255, 159, 243, 0.8), 0 0 24px rgba(255, 107, 129, 0.45);
-            }
-        }
-
-        @keyframes button-shimmer {
-            0% { left: -70%; opacity: 0; }
-            20% { opacity: 1; }
-            100% { left: 130%; opacity: 0; }
         }
 
         .key-sub {
@@ -408,22 +367,6 @@
         let currentInput = "0";
         let lastAns = "0";
 
-        const blingTimers = new WeakMap();
-
-        function triggerButtonBling(button) {
-            const existingTimer = blingTimers.get(button);
-            if (existingTimer) clearTimeout(existingTimer);
-            button.classList.remove('is-bling');
-            void button.offsetWidth;
-            button.classList.add('is-bling');
-
-            const timer = setTimeout(() => {
-                button.classList.remove('is-bling');
-                blingTimers.delete(button);
-            }, 550);
-            blingTimers.set(button, timer);
-        }
-
         function handleInput(val) {
             if (currentInput === "0" && !["+", "-", "*", "/", ".", ")"].includes(val)) {
                 currentInput = val;
@@ -466,8 +409,6 @@
                 screenTop.value = currentInput + " =";
                 currentInput = lastAns;
                 updateScreen();
-
-                // Hiệu ứng chữ "Yaaaa" kèm Thỏ & Cà rốt ngay ô kết quả
                 triggerRabbitCarrotEffect();
             } catch (err) {
                 screenMain.innerText = "Math ERROR";
@@ -480,7 +421,6 @@
             screenMain.scrollLeft = screenMain.scrollWidth;
         }
 
-        // Hiệu ứng thỏ & cà rốt cute kèm chữ "Yaaaa" ngay tại màn hình kết quả
         function triggerRabbitCarrotEffect() {
             const popup = document.createElement('div');
             popup.className = 'result-popup-effect';
@@ -513,15 +453,12 @@
             });
 
             effectContainer.replaceChildren(popup);
-            setTimeout(() => {
-                popup.remove();
-            }, 1100);
+            setTimeout(() => popup.remove(), 1100);
         }
 
         // Bắt sự kiện bấm phím trên giao diện
         document.querySelectorAll('.key, .nav-btn').forEach(element => {
-            element.addEventListener('click', (e) => {
-                triggerButtonBling(element);
+            element.addEventListener('click', () => {
                 const val = element.getAttribute('data-val');
                 
                 if (val === 'Escape') clearAll();
@@ -552,11 +489,6 @@
 
             const mappedVal = keyMap[e.key];
             if (mappedVal) {
-                const btn = document.querySelector(`[data-val="${mappedVal}"]`);
-                if (btn) {
-                    triggerButtonBling(btn);
-                }
-
                 if (mappedVal === 'Escape') clearAll();
                 else if (mappedVal === 'BACKSPACE') deleteChar();
                 else if (mappedVal === 'Enter') calculate();
